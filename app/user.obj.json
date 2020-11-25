@@ -1,0 +1,21 @@
+{
+  'display_name': 'n0rimaki_',
+  'external_urls': {
+    'spotify': 'https://open.spotify.com/user/n0rimaki_'
+  },
+  'followers': {
+    'href': None,
+    'total': 2
+  },
+  'href': 'https://api.spotify.com/v1/users/n0rimaki_',
+  'id': 'n0rimaki_',
+  'images': [
+    {
+      'height': None,
+      'url': 'https://i.scdn.co/image/ab6775700000ee854be046fb3c83a8ce1750751c',
+      'width': None
+    }
+  ],
+  'type': 'user',
+  'uri': 'spotify:user:n0rimaki_'
+}

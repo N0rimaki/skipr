@@ -9,12 +9,10 @@ from datetime import datetime
 
 created_at = str(datetime.now().strftime('%Y-%m-%d_%H:%M:%S'))
 
-
-
 class DBhelper:
     def __init__(self):
 
-        self.database = sqlite3.connect('./ignorebase.db')
+        self.database = sqlite3.connect('app/ignorebase.db')
         self.c = self.database.cursor()
 
         return None
@@ -60,13 +58,36 @@ class DBhelper:
         self.database.commit()
 
 
-    def getArtistByUser(self, id_user, id_artist):
-        self.c.execute("Select count(*) from Datatable where id_user = ? and id_artist = ? and status = 1", (id_user, id_artist,))
+    def getArtistByUser(self, id_user, id_artist="None", name_artist="None"):
+        print(id_user, id_artist, name_artist)
+        self.c.execute("Select count(*) from Datatable where id_user = ? and (id_artist = ? or name_artist = ?) and status = 1", (id_user, id_artist, name_artist,))
         # self.c.execute("Select solution from Games where rID = ?",(rid,))
         self.database.commit()
         result = self.c.fetchall()
-
+        print(result)
         if result[0][0] == 1:
+            print("T")
             return True
-        else:
+
+        print("F")
+        return False
+
+
+    def addNewUser(self, id_user,name_user,token):
+      
+        try:
+            self.c.execute('''INSERT OR IGNORE INTO User_Tokens(id_user,name_user,token,created_at)
+						  VALUES(?,?,?,?)''', (id_user, name_user, created_at))
+            self.database.commit()
+            sqlquery = self.database.set_trace_callback(None)
+            if sqlquery == True:
+
+                return True
+            else:
+
+                return False
+        except Exception as err:
+            print(str(err))
             return False
+        finally:
+            None

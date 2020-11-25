@@ -1,4 +1,9 @@
+/.flask_session
+/.spotify_caches
 /.idea
+/mysite
+/__pycache__
 *.ini
 *.log
 *.db
+*.cache

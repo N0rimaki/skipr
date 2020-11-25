@@ -12,11 +12,13 @@ from datetime import datetime
 import configparser
 import logging as log
 
+#TODO read artist which are flagged from "play less" function
+
 now = datetime.now()
 timestamp = datetime.timestamp(now)
 timeMinusOneDay = timestamp - (24 * 60 * 60)
 
-LOG_FILENAME = "./log_main.log"
+LOG_FILENAME = "../log_main.log"
 
 ___debug___ = True
 ___runprod___ = True
@@ -30,10 +32,13 @@ if ___debug___ == True:
 class skipr:
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('config.ini')
+        config.read('../config.ini')
 
         self.client_id = config['DEFAULT']['client_id']
         self.client_secret = config['DEFAULT']['client_secret']
+
+        print(self.client_id)
+        print(self.client_secret)
 
         self.user = None
         self.id_user = None
@@ -48,27 +53,34 @@ class skipr:
         scope = "user-read-currently-playing user-read-playback-state user-modify-playback-state"
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, client_id=self.client_id,
                                                             client_secret=self.client_secret,
-                                                            redirect_uri='https://example.com'))
+                                                            redirect_uri='http://127.0.0.1:8080/callback'))
+                                                            #redirect_uri='https://example.com'))
+
 
     def getDatabase(self, db):
         # get Database obj and pass it
         self.db = db
         return db
 
-    def addNewIgnore(self):
+    def addNewIgnore(self,arg_name_artist):
         # add the current artist to ignore
         # user input must be done as well
-        None
+        self.getCurrentUserData()
+       # self.getDatabase(self.db.addNewIgnore(self.id_user, self.name_user, None, arg_name_artist))
+
+        print(self.sp.search(q=arg_name_artist, limit=10, type="artist"))
+
 
     def updateIgnore(self):
         # remove artist from ignore list
         None
 
     def getIgnoredArtistsByUser(self):
-        return db.getArtistByUser(self.id_user, self.id_artist)
+        return self.getDatabase(self.db.getArtistByUser(self.id_user, self.id_artist, self.name_artist))
 
     def getCurrentPlayingTrack(self):
         res = self.sp.current_user_playing_track()
+        log.info("{}".format(res))
         if res is not None:
             self.name_track = res["item"]["name"]
             self.id_track = res["item"]["id"]
@@ -81,6 +93,7 @@ class skipr:
                     self.nextTrack()
         else:
             log.info("No running Track for {}".format(self.user["display_name"]))
+        return self.name_artist,self.name_track
 
     def getCurrentUserData(self):
         self.user = self.sp.current_user()
@@ -92,14 +105,21 @@ class skipr:
         log.info("Track skipped User: {} - Artist: {}".format(self.user["display_name"], self.name_artist))
 
 
+
 ##############################################################################################################
 if __name__ == "__main__":
 
-    skiprobj = skipr()
-    db = DBhelper()
-    skiprobj.getDatabase(db)
-
-    skiprobj.getCurrentUserData()
     while True:
-        skiprobj.getCurrentPlayingTrack()
-        time.sleep(5)
+        try:
+            skiprobj = skipr()
+            db = DBhelper()
+            skiprobj.getDatabase(db)
+            skiprobj.getCurrentUserData()
+            skiprobj.getCurrentPlayingTrack()
+            time.sleep(5)
+        except Exception as err:
+            log.error("{}".format(err))
+
+
+
+
